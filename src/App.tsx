@@ -1,22 +1,18 @@
 import React from 'react';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
-
-import Logo from "./assets/navbar-logo.png";
-
-const NavBar = () => <nav className="navbar navbar-light bg-light">
-    <div className="container">
-        <a href="#" className="navbar-brand">
-            <img src={Logo} alt="Logo" height={35}/>
-        </a>
-    </div>
-</nav>;
+import {Recipe} from "./components/Recipe";
+import NavBar from "./components/ui/NavBar";
+import {Provider} from "react-redux";
+import {store} from "./store";
 
 const App = () => (
-    <div className="container-fluid">
-
+    <div className="container-fluid p-0">
         <NavBar/>
 
+        <Provider store={store} >
+            <Recipe headerFormat={"Step %n"}/>
+        </Provider>
     </div>
 );
 
