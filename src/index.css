@@ -7,3 +7,39 @@ body {
 button:focus {
     box-shadow: none!important;
 }
+
+.list-group--item__background .active {
+    background-color: rgba(0,0,0,.03);
+    border: 1px solid rgba(0, 0, 0, 0.25);
+    color: black;
+}
+
+.list-group__scrollable {
+    overflow-y: scroll;
+    max-height: 300px;
+}
+.btn__fullwidth {
+    width: 100%;
+}
+.list-group--item__pointer {
+    cursor: pointer;
+}
+.list-group--item__scale_font:hover{
+    transition: .2s ease-in-out;
+    background-color: rgba(0,0,0,0.01);
+}
+.ingredients--input__enchantment {
+    max-width: 80px;
+    border: none!important;
+    border-bottom: 1px solid black!important;
+    border-radius: 0!important;
+    text-align: center;
+}
+.ingredients--input__enchantment:hover, .ingredients--input__enchantment:focus {
+    box-shadow: none!important;
+    border: none;
+}
+
+/*
+maxWidth: "80px", borderBottom: "1px solid black", textAlign: "center"
+ */

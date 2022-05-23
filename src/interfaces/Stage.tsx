@@ -1,9 +1,11 @@
 export interface Product {
-    uid: number;
+    _id: {
+        $oid: string;
+    };
     displayName: string;
     price: number;
     amount: number;
-    unit: string;
+    unit: "ml" | "pcs" | "g";
 }
 
 export interface Ingredient {

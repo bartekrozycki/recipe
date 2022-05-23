@@ -1,5 +1,5 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {Recipe} from "../interfaces";
+import {Product, Recipe} from "../interfaces";
 import {RootState} from "./index";
 
 interface IRecipeSlice {
@@ -16,68 +16,7 @@ const initialState: IRecipeSlice = {
                 heat: 0,
                 mix: 5,
                 duration: 40,
-                ingredients: [
-                    {
-                        product: {
-                            uid: 1,
-                            displayName: "Jajko",
-                            amount: 1,
-                            price: 1.3,
-                            unit: "pcs",
-                        },
-                        amount: 2
-                    },
-                    {
-                        product: {
-                            uid: 2,
-                            displayName: "Mąka pszenna",
-                            amount: 500,
-                            price: 5.3,
-                            unit: "g",
-                        },
-                        amount: 200
-                    },
-                    {
-                        product: {
-                            uid: 3,
-                            displayName: "Mleko",
-                            amount: 1000,
-                            price: 3,
-                            unit: "ml",
-                        },
-                        amount: 250
-                    },
-                    {
-                        product: {
-                            uid: 4,
-                            displayName: "Woda Gazowana",
-                            amount: 1500,
-                            price: 1.5,
-                            unit: "ml",
-                        },
-                        amount: 250
-                    },
-                    {
-                        product: {
-                            uid: 5,
-                            displayName: "Masło",
-                            amount: 200,
-                            price: 7,
-                            unit: "g",
-                        },
-                        amount: 60
-                    },
-                    {
-                        product: {
-                            uid: 6,
-                            displayName: "Sól",
-                            amount: 500,
-                            price: 7,
-                            unit: "g",
-                        },
-                        amount: 1
-                    },
-                ]
+                ingredients: []
             },
         ]
     },
@@ -92,7 +31,6 @@ export const recipeSlice = createSlice({
         },
         setMix: (state, action: PayloadAction<number>) => {
             state.recipe.stages[state.activeStage].mix = action.payload;
-
         },
         setDuration: (state, action: PayloadAction<number>) => {
             state.recipe.stages[state.activeStage].duration = action.payload;
@@ -100,25 +38,48 @@ export const recipeSlice = createSlice({
         addStage: (state) => {
             state.recipe.stages.push({
                 description: null,
-                heat: 3,
-                mix: 1,
-                duration: 30,
-                ingredients: [
-                    {
-                        product: {
-                            displayName: "Jajko",
-                            amount: 1,
-                            unit: "pcs",
-                            uid: 1,
-                            price: 1.3
-                        },
-                        amount: 2
-                    }
-                ]
+                heat: 0,
+                mix: 0,
+                duration: 0,
+                ingredients: []
             })
         },
         setActiveStage: (state, action: PayloadAction<number>) => {
             state.activeStage = action.payload;
+        },
+        addIngredient: (state, action: PayloadAction<Product>) => {
+            const activeStage = state.recipe.stages[state.activeStage];
+            const exist = activeStage.ingredients.findIndex(
+                (value) => {
+                    return value.product._id.$oid === action.payload._id.$oid;
+                }
+            ) !== -1;
+            if (!exist) {
+                activeStage.ingredients.push(
+                    {
+                        product: action.payload,
+                        amount: action.payload.amount
+                    }
+                );
+            }
+        },
+        removeIngredientByOID: (state, action: PayloadAction<string>) => {
+            const activeStage = state.recipe.stages[state.activeStage];
+
+            const indexToRemove = activeStage.ingredients.findIndex(
+                (value) => value.product._id.$oid === action.payload
+            );
+
+            activeStage.ingredients.splice(indexToRemove, 1);
+        },
+        changeIngredient: (state, action: PayloadAction<{oid: string, value: number}>) => {
+            const activeStage = state.recipe.stages[state.activeStage];
+
+            const ingredientId = activeStage.ingredients.findIndex(
+                (value) => value.product._id.$oid === action.payload.oid
+            );
+
+            activeStage.ingredients[ingredientId].amount = action.payload.value;
         }
     }
 });
@@ -129,6 +90,8 @@ export const selectStages = (state: RootState) => state.recipe.recipe.stages;
 export const selectCurrentStage = (state: RootState) => state.recipe.recipe.stages[state.recipe.activeStage];
 
 export const selectActiveStage = (state: RootState) => state.recipe.activeStage;
+
+export const selectIngredients = (state: RootState) => state.recipe.recipe.stages[state.recipe.activeStage].ingredients;
 
 
 export const recipeActions = recipeSlice.actions;

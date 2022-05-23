@@ -1,6 +1,5 @@
 import React from "react";
 import {ListGroup} from "react-bootstrap";
-import "./StepSelector.css";
 import {useDispatch, useSelector} from "react-redux";
 import {recipeActions, selectActiveStage, selectStages} from "../../store/recipe-slice";
 import {AppDispatch} from "../../store";
@@ -9,7 +8,7 @@ interface IStepSelectorProps {
     headerFormat: string;
 }
 
-export const StepSelector: React.FC<IStepSelectorProps> = (props) => {
+export const StageSelector: React.FC<IStepSelectorProps> = (props) => {
     const dispatch = useDispatch<AppDispatch>();
     const stages = useSelector(selectStages);
     const activeStage = useSelector(selectActiveStage);
@@ -27,6 +26,7 @@ export const StepSelector: React.FC<IStepSelectorProps> = (props) => {
 
             return (
                 <ListGroup.Item
+                    className={"list-group--item__pointer list-group--item__scale_font"}
                     key={index}
                     onClick={onClick}
                     active={isActive}>
@@ -54,5 +54,5 @@ export const StepSelector: React.FC<IStepSelectorProps> = (props) => {
     )
 };
 
-export default StepSelector;
+export default StageSelector;
 

@@ -1,10 +1,13 @@
-import React from "react";
+import React, {useCallback, useEffect, useMemo, useState} from "react";
 import {Card} from "react-bootstrap";
 import {useDispatch, useSelector} from "react-redux";
-import {recipeActions, selectActiveStage, selectCurrentStage} from "../../store/recipe-slice";
+import {recipeActions, selectActiveStage, selectCurrentStage, selectIngredients} from "../../store/recipe-slice";
 import {RangeInput} from "./RangeInput";
 import {AppDispatch} from "../../store";
+import {getProductsSuggestions} from "../../api/productsAPI";
+import {Product} from "../../interfaces";
 
+const DEBOUNCE_IN_MILLISECONDS = 500;
 
 interface IStepProps {
     headerFormat: string;
@@ -13,22 +16,124 @@ interface IStepProps {
 export const RecipeStage: React.FC<IStepProps> = (props) => {
 
     const stage = useSelector(selectCurrentStage);
-    const activeStage = useSelector(selectActiveStage);
+    const activeStage = useSelector(selectActiveStage) + 1;
+    const ingredients = useSelector(selectIngredients);
+
+    const [apiProducts, setApiProducts] = useState<Product[]>([]);
+    const [productFinder, setProductFinder] = useState<string>("");
 
     const dispatch = useDispatch<AppDispatch>();
 
 
-    const heatChangeHandler = (value: number) => {
-        dispatch(recipeActions.setHeat(value));
-    };
-    const mixChangeHandler = (value: number) => {
-        dispatch(recipeActions.setMix(value));
+    const heatChangeHandler = useCallback(
+        (temperature: number) => {
+            dispatch(recipeActions.setHeat(temperature));
+        }, [dispatch]
+    );
 
-    };
-    const durationChangeHandler = (value: number) => {
-        dispatch(recipeActions.setDuration(value));
-    };
+    const mixChangeHandler = useCallback(
+        (level: number) => {
+            dispatch(recipeActions.setMix(level));
+        },
+        [dispatch],
+    );
 
+    const durationChangeHandler = useCallback(
+        (time: number) => {
+            dispatch(recipeActions.setDuration(time));
+        },
+        [dispatch],
+    );
+
+    const addIngredientHandler = useCallback(
+        (product: Product) => {
+            dispatch(recipeActions.addIngredient(product));
+        },
+        [dispatch],
+    );
+
+    const removeIngredientHandler = useCallback(
+        (oid: string) => {
+            dispatch(recipeActions.removeIngredientByOID(oid));
+        },
+        [dispatch],
+    );
+
+    const changeIngredientHandler = useCallback(
+        (oid: string, value: number) => {
+            dispatch(recipeActions.changeIngredient({oid, value}));
+        },
+        [dispatch],
+    );
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            setApiProducts(
+                await getProductsSuggestions(productFinder)
+            );
+        };
+
+        const debounce = setTimeout(fetchProducts, DEBOUNCE_IN_MILLISECONDS);
+
+        return () => {
+            clearTimeout(debounce);
+        };
+    }, [productFinder]);
+
+
+    const apiProductsTable = useMemo(() => (
+        <div className={"container-fluid my-2"}>
+            {
+                apiProducts.length > 0 && apiProducts.map(
+                    value => (
+                        <div className={"row my-1"} key={value._id.$oid}>
+                            <div className="col-6 d-flex align-items-center">
+                                {value.displayName}
+                            </div>
+                            <div className="col-6 d-flex align-items-center justify-content-end">
+                                <button className="btn btn-toolbar"
+                                        onClick={() => {
+                                            addIngredientHandler(value);
+                                        }}>
+                                    +
+                                </button>
+                            </div>
+                        </div>
+                    )
+                )
+            }
+        </div>
+    ), [apiProducts, addIngredientHandler]);
+
+    const ingredientsTable = useMemo(() => (
+        <div className={"container-fluid my-2"}>
+            {
+                ingredients.length > 0 ? ingredients.map(
+                    value => (
+                        <div className={"row my-1"} key={value.product._id.$oid}>
+                            <div className="col-4 d-flex align-items-center">
+                                {value.product.displayName}
+                            </div>
+                            <div className="col-4 d-flex align-items-center">
+                                <input type="number"
+                                       className={"form-control form-control-plaintext ingredients--input__enchantment"}
+                                       value={value.amount}
+                                       onChange={(e) => changeIngredientHandler(value.product._id.$oid, Number(e.target.value))}
+                                />
+                                <span className={"ms-2"}>
+                                    {value.product.unit}
+                            </span>
+                            </div>
+                            <div className="col-4 d-flex align-items-center justify-content-end">
+                                <button className="btn-close"
+                                        onClick={() => removeIngredientHandler(value.product._id.$oid)} />
+                            </div>
+                        </div>
+                    )
+                ) : <p>Add some ingredients! :)</p>
+            }
+        </div>
+    ), [ingredients, removeIngredientHandler, changeIngredientHandler]);
 
     return (
         <Card>
@@ -39,12 +144,11 @@ export const RecipeStage: React.FC<IStepProps> = (props) => {
 
                 <div className="container-fluid p-0">
                     <div className="row">
-
                         <div className="col-4">
-                            <RangeInput label={"Heat level: %n"}
+                            <RangeInput label={"Temperature: %n°C"}
                                         min={0}
-                                        max={12}
-                                        step={1}
+                                        max={260}
+                                        step={10}
                                         value={stage.heat}
                                         setValue={heatChangeHandler}/>
                         </div>
@@ -65,11 +169,32 @@ export const RecipeStage: React.FC<IStepProps> = (props) => {
                                         setValue={durationChangeHandler}/>
                         </div>
                     </div>
+
+                    <div className="row mt-3">
+                        <h2>Ingredients</h2>
+                        <div className="col-12">
+                            {ingredientsTable}
+                        </div>
+
+                    </div>
+
+
+                    <div className="row mt-3">
+                        <h4>Find some ingredients!</h4>
+                        <div className="col-12">
+                            <input className="form-control"
+                                   list="datalistOptions"
+                                   id="exampleDataList"
+                                   placeholder="Type to search..."
+                                   value={productFinder}
+                                   onChange={(event) => setProductFinder(event.target.value)}
+                            />
+                            {apiProductsTable}
+                        </div>
+                    </div>
+
+
                 </div>
-
-
-                {stage.description}
-
             </Card.Body>
         </Card>
     )

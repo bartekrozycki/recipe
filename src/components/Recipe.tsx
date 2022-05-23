@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import StageSelector from "./recipe-components/StepSelector";
+import StageSelector from "./recipe-components/StageSelector";
 import RecipeStage from "./recipe-components/RecipeStage";
 import {useSelector} from "react-redux";
 import {selectDisplayName} from "../store/recipe-slice";
@@ -22,10 +22,10 @@ export const Recipe: React.FC<IRecipeProps> = (props) => {
 
 
             <div className="row p-0">
-                <div className="col-3">
+                <div className="col-12 mb-4 col-md-3 mb-md-0">
                     <StageSelector headerFormat={props.headerFormat}/>
                 </div>
-                <div className="col-9">
+                <div className="col-12 col-md-9">
                     <RecipeStage headerFormat={props.headerFormat}/>
                 </div>
             </div>
