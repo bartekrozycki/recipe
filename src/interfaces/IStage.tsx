@@ -13,7 +13,7 @@ export interface Ingredient {
     amount: number;
 }
 
-export interface Stage {
+export interface IStage {
     description: string | null;
     heat: number;
     mix: number;
@@ -22,6 +22,11 @@ export interface Stage {
 }
 
 export interface Recipe {
-    stages: Stage[];
+    _id?: {
+        $oid: string;
+    };
+    imageURL: string,
+    description: string,
+    stages: IStage[];
     displayName: string;
 }

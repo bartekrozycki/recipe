@@ -1,2 +1,4 @@
-export * from "./Stage";
+export * from "./IStage";
+export * from "./IRoutes";
+
 

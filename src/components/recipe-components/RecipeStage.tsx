@@ -4,7 +4,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {recipeActions, selectActiveStage, selectCurrentStage, selectIngredients} from "../../store/recipe-slice";
 import {RangeInput} from "./RangeInput";
 import {AppDispatch} from "../../store";
-import {getProductsSuggestions} from "../../api/productsAPI";
+import {getProductsSuggestions} from "../../api/productAPI";
 import {Product} from "../../interfaces";
 
 const DEBOUNCE_IN_MILLISECONDS = 500;

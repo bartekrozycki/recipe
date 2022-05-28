@@ -1,19 +1,27 @@
 import React from 'react';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {Recipe} from "./components/Recipe";
 import NavBar from "./components/ui/NavBar";
-import {Provider} from "react-redux";
-import {store} from "./store";
+import {Route, Switch} from "react-router-dom";
+import {RecipeEditorPage} from "./pages/RecipeEditorPage";
+import {RecipeViewerPage} from "./pages/RecipeViewerPage";
 
-const App = () => (
-    <div className="container-fluid p-0">
-        <NavBar/>
+const App = () => {
 
-        <Provider store={store} >
-            <Recipe headerFormat={"Step %n"}/>
-        </Provider>
-    </div>
-);
+    return (
+        <div className="container-fluid p-0">
+            <NavBar/>
+
+            <Switch>
+                <Route path={"/recipe/:recipeId"}>
+                    <RecipeEditorPage headerFormat={"Step %n"}/>
+                </Route>
+                <Route path={"/"}>
+                    <RecipeViewerPage />
+                </Route>
+            </Switch>
+        </div>
+    );
+};
 
 export default App;

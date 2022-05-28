@@ -10,6 +10,8 @@ interface IRecipeSlice {
 const initialState: IRecipeSlice = {
     recipe: {
         displayName: "Naleśniki szybkie, łatwe i proste",
+        description: "Bardzo dobre, super szybkie najlepsze na swiecie nalesniki z dzemem",
+        imageURL: "...",
         stages: [
             {
                 description: null,
@@ -26,6 +28,9 @@ export const recipeSlice = createSlice({
     name: "recipe",
     initialState,
     reducers: {
+        setRecipe: (state, action: PayloadAction<Recipe>) => {
+            state.recipe = action.payload;
+        },
         setHeat: (state, action: PayloadAction<number>) => {
             state.recipe.stages[state.activeStage].heat = action.payload;
         },
@@ -66,11 +71,9 @@ export const recipeSlice = createSlice({
         removeIngredientByOID: (state, action: PayloadAction<string>) => {
             const activeStage = state.recipe.stages[state.activeStage];
 
-            const indexToRemove = activeStage.ingredients.findIndex(
-                (value) => value.product._id.$oid === action.payload
+            activeStage.ingredients = activeStage.ingredients.filter(
+                (value) => value.product._id.$oid !== action.payload
             );
-
-            activeStage.ingredients.splice(indexToRemove, 1);
         },
         changeIngredient: (state, action: PayloadAction<{oid: string, value: number}>) => {
             const activeStage = state.recipe.stages[state.activeStage];
@@ -83,6 +86,8 @@ export const recipeSlice = createSlice({
         }
     }
 });
+
+export const selectRecipe = (state: RootState) => state.recipe.recipe;
 
 export const selectDisplayName = (state: RootState) => state.recipe.recipe.displayName;
 
