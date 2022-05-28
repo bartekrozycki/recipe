@@ -31,6 +31,15 @@ export const recipeSlice = createSlice({
         setRecipe: (state, action: PayloadAction<Recipe>) => {
             state.recipe = action.payload;
         },
+        setDisplayName: (state, action: PayloadAction<string>) => {
+            state.recipe.displayName = action.payload;
+        },
+        setImageURL: (state, action: PayloadAction<string>) => {
+            state.recipe.imageURL = action.payload;
+        },
+        setDescription: (state, action: PayloadAction<string>) => {
+            state.recipe.description = action.payload;
+        },
         setHeat: (state, action: PayloadAction<number>) => {
             state.recipe.stages[state.activeStage].heat = action.payload;
         },
@@ -90,6 +99,8 @@ export const recipeSlice = createSlice({
 export const selectRecipe = (state: RootState) => state.recipe.recipe;
 
 export const selectDisplayName = (state: RootState) => state.recipe.recipe.displayName;
+export const selectImageURL = (state: RootState) => state.recipe.recipe.imageURL;
+export const selectDescription = (state: RootState) => state.recipe.recipe.description;
 
 export const selectStages = (state: RootState) => state.recipe.recipe.stages;
 export const selectCurrentStage = (state: RootState) => state.recipe.recipe.stages[state.recipe.activeStage];

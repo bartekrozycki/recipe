@@ -2,12 +2,13 @@ import React, {useEffect, useState} from "react";
 import StageSelector from "../components/recipe-components/StageSelector";
 import RecipeStage from "../components/recipe-components/RecipeStage";
 import {useDispatch, useSelector} from "react-redux";
-import {recipeActions, selectDisplayName, selectRecipe} from "../store/recipe-slice";
+import {recipeActions, selectRecipe} from "../store/recipe-slice";
 import {AppDispatch} from "../store";
-import {useParams} from "react-router-dom";
+import {useHistory, useParams} from "react-router-dom";
 import {IRecipeEditorRoute} from "../interfaces";
 import {recipeAPI} from "../api/recipeAPI";
 import {AxiosError} from "axios";
+import {BasicInfoEdit} from "../components/recipe-components/BasicInfoEdit";
 
 interface IRecipeProps {
     // %n - step number
@@ -15,10 +16,11 @@ interface IRecipeProps {
 }
 
 export const RecipeEditorPage: React.FC<IRecipeProps> = (props) => {
+    const history = useHistory();
+
     const {recipeId} = useParams<IRecipeEditorRoute>();
 
     const dispatch = useDispatch<AppDispatch>();
-    const displayName = useSelector(selectDisplayName);
     const recipe = useSelector(selectRecipe);
 
     const [error, setError] = useState<string | null>(null);
@@ -31,6 +33,7 @@ export const RecipeEditorPage: React.FC<IRecipeProps> = (props) => {
             .then(
                 (response) => {
                     console.log(response);
+                    history.push("/");
                 }
             )
             .catch(
@@ -75,11 +78,8 @@ export const RecipeEditorPage: React.FC<IRecipeProps> = (props) => {
                     ? (
                         !isLoading && (
                             <>
-                                <div className="row p-0">
-                                    <h1 style={{
-                                        fontFamily: "'Roboto Flex', sans-serif",
-                                        fontWeight: 400
-                                    }}>{displayName}</h1>
+                                <div className="row p-0 my-3">
+                                    <BasicInfoEdit/>
                                 </div>
 
 

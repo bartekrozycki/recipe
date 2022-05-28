@@ -1,5 +1,6 @@
 import axios, {AxiosResponse} from "axios";
 import {Recipe} from "../interfaces";
+import {IRecipesResponse} from "../interfaces/IRecipesResponse";
 
 
 const HEADERS_JSON = {
@@ -22,7 +23,7 @@ export const recipeAPI = {
 
         return API.post<Recipe>(`/api/recipe/${recipeId}`, deepCopy)
     },
-    getAll: () => API.get<Recipe[]>(`/api/recipe`),
+    getAll: (page: string) => API.get<IRecipesResponse>(`/api/recipe/p/${page}`),
 };
 
 

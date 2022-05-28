@@ -16,7 +16,7 @@ const App = () => {
                 <Route path={"/recipe/:recipeId"}>
                     <RecipeEditorPage headerFormat={"Step %n"}/>
                 </Route>
-                <Route path={"/"}>
+                <Route path={"/:page?"}>
                     <RecipeViewerPage />
                 </Route>
             </Switch>

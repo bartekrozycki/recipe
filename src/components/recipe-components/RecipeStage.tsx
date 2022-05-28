@@ -180,7 +180,6 @@ export const RecipeStage: React.FC<IStepProps> = (props) => {
 
 
                     <div className="row mt-3">
-                        <h4>Find some ingredients!</h4>
                         <div className="col-12">
                             <input className="form-control"
                                    list="datalistOptions"
